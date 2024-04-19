@@ -8,15 +8,15 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class Board {
-    final int coloumn=8;
+    final int column=8;
     final int row=8;
-    public static final int size=120;
+    public static final int size=104;
     public static final int halfSize=(size/2);
 
     public void make(Graphics2D g2) {
         int c1 = 1;
         for (int r = 0; r < row; r++) {
-            for (int c = 0; c < coloumn; c++) {
+            for (int c = 0; c < column; c++) {
                 if (c1 == 0) {
                     g2.setColor(new Color(145, 90, 1));
                     c1 = 1;

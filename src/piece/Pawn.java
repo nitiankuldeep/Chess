@@ -1,13 +1,18 @@
 package piece;
 
 import main.GameSpace;
+import main.PieceId;
 
 public class Pawn extends Piece{
-    public Pawn(int color,int coloumn,int row) {
-    	super(color,coloumn,row);
+    public Pawn(int color,int column,int row) {
+    	super(color,column,row);
+
+		Pid = PieceId.PAWN;
+
     	if(color==GameSpace.White) {
     		 image=getp("/piece/pawnw.png");
-    	}else {
+    	}
+		else {
     		image=getp("/piece/pawnb.png");
     	}
     }
@@ -21,15 +26,25 @@ public class Pawn extends Piece{
 			else
 				move=1;
 			hitingp=hitting(tarCol, tarRow);
-			if(tarCol==prevColoumn&&tarRow==prevRow+move&&hitingp==null){
+			if(tarCol==prevcolumn&&tarRow==prevRow+move&&hitingp==null){
 				return true;
 			}
 
-			if(tarCol==prevColoumn&&tarRow==prevRow+move*2&&hitingp==null&&moved==false&&sameLine(tarCol,tarRow)==false){
+			if(tarCol==prevcolumn&&tarRow==prevRow+move*2&&hitingp==null&&moved==false&&sameLine(tarCol,tarRow)==false){
 				return true;
 			}
-			if(Math.abs(tarCol-prevColoumn)==1 && tarRow==prevRow+move && hitingp!=null){
+			if(Math.abs(tarCol-prevcolumn)==1 && tarRow==prevRow+move && hitingp!=null){
 				return  true;
+			}
+
+			//En Passant
+			if(Math.abs(tarCol-prevcolumn)==1 && tarRow==prevRow+move) {
+				for(Piece piece : GameSpace.simPieces) {
+					if(piece.column == tarCol && piece.row == prevRow && piece.twoStep == true) {
+						hitingp = piece;
+						return  true;
+					}
+				}
 			}
 		}
 		return false;

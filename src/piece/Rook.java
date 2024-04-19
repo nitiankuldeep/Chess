@@ -1,10 +1,16 @@
 package piece;
 
+import main.Board;
 import main.GameSpace;
+import main.PieceId;
 
 public class Rook extends Piece{
-    public Rook(int color,int coloumn,int row) {
-    	super(color,coloumn,row);
+
+    public Rook(int color,int column,int row) {
+    	super(color,column,row);
+
+		Pid = PieceId.ROOK;
+
     	if(color==GameSpace.White) {
     		 image=getp("/piece/rookw.png");
     	}else {
@@ -14,8 +20,8 @@ public class Rook extends Piece{
 
 	@Override
 	public boolean canMove(int tarCol, int tarRow) {
-		if(within(tarCol,tarRow)&&sameSq(tarCol,tarRow)==true){
-				if(isvalid(tarCol,tarRow)&&sameLine(tarCol,tarRow)==false){
+		if(within(tarCol,tarRow) && sameSq(tarCol,tarRow)==false){
+				if(isvalid(tarCol,tarRow) &&Math.abs((tarCol-prevcolumn))*Math.abs(tarRow-prevRow)==0 &&sameLine(tarCol,tarRow)==false){
 					return true;
 				}
 		}

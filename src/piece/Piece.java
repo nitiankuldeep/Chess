@@ -8,22 +8,24 @@ import javax.imageio.ImageIO;
 
 import main.Board;
 import main.GameSpace;
+import main.PieceId;
 
 public class Piece {
- 
+
+	public PieceId Pid;
     public BufferedImage image;	
     public int x,y;
-    public int coloumn,row,prevColoumn,prevRow;
+    public int column,row,prevcolumn,prevRow;
     public int color;
 	public Piece hitingp;
-	public  boolean moved;
-     public Piece(int color,int coloumn,int row) {
+	public  boolean moved, twoStep;
+     public Piece(int color,int column,int row) {
     	 this.color=color;
-    	 this.coloumn=coloumn;
+    	 this.column=column;
     	 this.row=row;
-    	 x=getX(coloumn);
+    	 x=getX(column);
     	 y=getY(row); 
-    	 prevColoumn=coloumn;
+    	 prevcolumn=column;
     	 prevRow=row;
     	 
      }
@@ -38,8 +40,8 @@ public class Piece {
     	 return image; 
      }
      
-     public int getX(int coloumn ) {
-    	 return coloumn*Board.size;
+     public int getX(int column ) {
+    	 return column*Board.size;
      }
      public int getY(int row ) {
     	 return row*Board.size;
@@ -51,9 +53,17 @@ public class Piece {
 		return (y+Board.halfSize)/Board.size;
 	}
 	public void  update(){
-		 x=getX(coloumn);
+
+		 //Checking En Passant
+		if(Pid == PieceId.PAWN) {
+			if(Math.abs(row - prevRow) == 2) {
+				twoStep = true;
+			}
+		}
+
+		 x=getX(column);
 		 y=getY(row);
-		 prevColoumn=getcol(x);
+		 prevcolumn=getcol(x);
 		 prevRow=getrow(y);
 		 moved=true;
 	}
@@ -89,40 +99,40 @@ public boolean canMove(int tarCol,int tarRow){
 	}
 
 public void resetPosition(){
-		 coloumn=prevColoumn;
+		 column=prevcolumn;
 		 row=prevRow;
-		 x=getX(coloumn);
+		 x=getX(column);
 	     y=getY(row);
 	 }
 public Piece hitting(int tarCol,int tarRow){
 for(Piece piece: GameSpace.simPieces) {
-	if (tarCol == piece.coloumn && tarRow == piece.row && piece != this) {
+	if (tarCol == piece.column && tarRow == piece.row && piece != this) {
 		return piece;
 	}
  }
 return null;
 }
 public boolean sameSq(int tarCol,int tarRow){
-	if(Math.abs(tarCol-prevColoumn)==0||Math.abs(tarRow-prevRow)==0){
+	if(tarCol==prevcolumn&&tarRow==prevRow){
 		return true;
 	}
 	return false;
 }
 public boolean sameDig(int tarCol ,int tarRow){
 		if(tarRow<prevRow) {
-			for(int c=prevColoumn-1;c>tarCol;c--){
-				int dif=Math.abs(c-prevColoumn);
+			for(int c=prevcolumn-1;c>tarCol;c--){
+				int dif=Math.abs(c-prevcolumn);
 				for(Piece piece:GameSpace.simPieces){
-					if(piece.coloumn==c&&piece.row==prevRow-dif){
+					if(piece.column==c&&piece.row==prevRow-dif){
 						hitingp=piece;
 						return  true;
 					}
 				}
 			}
-			for(int c=prevColoumn+1;c<tarCol;c++){
-				int dif=Math.abs(c-prevColoumn);
+			for(int c=prevcolumn+1;c<tarCol;c++){
+				int dif=Math.abs(c-prevcolumn);
 				for(Piece piece:GameSpace.simPieces){
-					if(piece.coloumn==c&&piece.row==prevRow-dif){
+					if(piece.column==c&&piece.row==prevRow-dif){
 						hitingp=piece;
 						return  true;
 					}
@@ -130,20 +140,20 @@ public boolean sameDig(int tarCol ,int tarRow){
 			}
 
 		} else if (tarRow>prevRow) {
-			for(int c=prevColoumn-1;c>tarCol;c--) {
-				int dif = Math.abs(c - prevColoumn);
+			for(int c=prevcolumn-1;c>tarCol;c--) {
+				int dif = Math.abs(c - prevcolumn);
 				for (Piece piece : GameSpace.simPieces) {
-					if (piece.coloumn == c && piece.row == prevRow + dif) {
+					if (piece.column == c && piece.row == prevRow + dif) {
 						hitingp = piece;
 						return true;
 					}
 				}
 			}
 
-			for(int c=prevColoumn+1;c<tarCol;c++) {
-				int dif = Math.abs(c - prevColoumn);
+			for(int c=prevcolumn+1;c<tarCol;c++) {
+				int dif = Math.abs(c - prevcolumn);
 				for (Piece piece : GameSpace.simPieces) {
-					if (piece.coloumn == c && piece.row == prevRow + dif) {
+					if (piece.column == c && piece.row == prevRow + dif) {
 						hitingp = piece;
 						return true;
 					}
@@ -152,18 +162,19 @@ public boolean sameDig(int tarCol ,int tarRow){
 		}
 	return  false;
 }
+
 public boolean sameLine(int tarCol,int tarRow) {
-	for (int c = prevColoumn-1;c>tarCol;c--){
+	for (int c = prevcolumn-1;c>tarCol;c--){
 		for(Piece piece:GameSpace.simPieces){
-			if(piece.coloumn==c&&piece.row==tarRow){
+			if(piece.column==c&&piece.row==tarRow){
 				hitingp=piece;
 				return true;
 			}
 		}
 	}
-	for (int c = prevColoumn+1;c<tarCol;c++){
+	for (int c = prevcolumn+1;c<tarCol;c++){
 		for(Piece piece:GameSpace.simPieces){
-			if(piece.coloumn==c&&piece.row==tarRow){
+			if(piece.column==c&&piece.row==tarRow){
 				hitingp=piece;
 				return true;
 			}
@@ -171,7 +182,7 @@ public boolean sameLine(int tarCol,int tarRow) {
 	}
 	for (int c = prevRow-1;c>tarRow;c--){
 		for(Piece piece:GameSpace.simPieces){
-			if(piece.row==c&&piece.coloumn==tarCol){
+			if(piece.row==c&&piece.column==tarCol){
 				hitingp=piece;
 				return true;
 			}
@@ -179,7 +190,7 @@ public boolean sameLine(int tarCol,int tarRow) {
 	}
 	for (int c = prevRow+1;c<tarRow;c++){
 		for(Piece piece:GameSpace.simPieces){
-			if(piece.row==c&&piece.coloumn==tarCol){
+			if(piece.row==c&&piece.column==tarCol){
 				hitingp=piece;
 				return true;
 			}
@@ -188,6 +199,6 @@ public boolean sameLine(int tarCol,int tarRow) {
 	return false;
 }
 public void draw(Graphics2D g2) {
-    	g2.drawImage(image,x,y,image.getWidth(),image.getHeight(), null);
+		 g2.drawImage(image,x,y,Board.size,Board.size, null);
     }
 }
