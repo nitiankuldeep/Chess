@@ -437,6 +437,23 @@ public void simulate(){
             p.draw(g2);
         }
         if (activep!=null) {
+            for (int r = 0; r < 8; r++) {
+                for (int c = 0; c < 8; c++) {
+                    if (activep.canMove(c, r)) {
+                        g2.setColor(Color.WHITE);
+                        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+                        g2.fillRect(c * Board.size, r * Board.size, Board.size, Board.size);
+                        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+                    }
+                    if(activep.canMove(c, r)&&activep.hitting(c,r)!=null){
+                        g2.setColor(new Color(17, 68, 210, 255));
+                        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+                        g2.fillRect(c * Board.size, r * Board.size, Board.size, Board.size);
+                        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+                    }
+
+                }
+            }
             if (canMove) {
                 if(isIlegal(activep) || opponentCanCaptureKing()) {
                     g2.setColor(Color.RED );
